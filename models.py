@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Float, Integer, String
+from sqlalchemy import Column, Float, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from pydantic import BaseModel
 from database import Base
@@ -14,11 +14,12 @@ class LoginBase(BaseModel):
   
 class User(Base):
     __tablename__ = "users"
-    id = Column[int](Integer, primary_key=True, index=True)
-    name = Column[str](String, index=True)
-    email = Column[str](String, unique=True, index=True)
-    hashed = Column[str](String, unique=True, index=False)
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    email = Column(String, unique=True, index=True)
+    hashed = Column(String, unique=True, index=False)
 
+    cart = relationship("Cart", back_populates="user")
 
 class Item(Base):
     __tablename__ = "items"
@@ -27,3 +28,13 @@ class Item(Base):
     img = Column(String)
     price = Column(Float)
     count = Column(Integer)
+    carts = relationship("Cart", back_populates="item")
+
+class Cart(Base):
+    __tablename__ = "carts"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    item_id = Column(Integer, ForeignKey("items.id"))
+    quantity = Column(Integer, default=1)
+    user = relationship("User", back_populates="cart")
+    item = relationship("Item", back_populates="carts")

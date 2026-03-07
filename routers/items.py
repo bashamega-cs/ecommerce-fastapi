@@ -44,10 +44,3 @@ def delete_post(id: int, db: Session = Depends(database.get_db)):
     db.commit()
     return {"detail": "Item deleted successfully"}
 
-# Adding the requested /shop route
-@router.get("/shop", response_model=List[schemas.Item])
-def shop(db: Session = Depends(database.get_db)):
-    """
-    Returns all items available in the shop.
-    """
-    return db.query(models.Item).all()
